@@ -1,3 +1,4 @@
+using preliminarServicios.Services;
 using Scalar.AspNetCore;
 
 
@@ -8,6 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton<IPacienteService, PacienteService>();
+builder.Services.AddSingleton<IMedicoService, MedicoService>();
+builder.Services.AddSingleton<IEspecialidadService, EspecialidadService>();
+builder.Services.AddSingleton<ICitaService, CitaService>();
 
 var app = builder.Build();
 

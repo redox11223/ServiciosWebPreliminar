@@ -1,4 +1,4 @@
-namespace preliminarServicios.Models.Dto;
+namespace preliminarServicios.Models.Dtos;
 using System.ComponentModel.DataAnnotations;
 public record class CreateCitaDto(
     
