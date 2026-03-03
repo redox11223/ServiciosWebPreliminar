@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "Yk2FVjKqWHI=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\migue\\Desktop\\preliminarServicios\\preliminarServicios.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\migue\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.3\\microsoft.aspnetcore.openapi.10.0.3.nupkg.sha512",
+    "C:\\Users\\migue\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "C:\\Users\\migue\\.nuget\\packages\\scalar.aspnetcore\\2.0.36\\scalar.aspnetcore.2.0.36.nupkg.sha512"
+  ],
+  "logs": []
+}
