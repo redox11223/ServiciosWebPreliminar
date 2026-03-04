@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
+using preliminarServicios.Services;
 
 namespace preliminarServicios.Controllers
 {

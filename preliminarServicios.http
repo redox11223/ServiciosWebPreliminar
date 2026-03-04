@@ -4,3 +4,17 @@ GET {{preliminarServicios_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{preliminarServicios_HostAddress}}/api/especialidad
+Content-Type: application/json
+
+{
+    "nombre": "Cardiología"
+}
+
+###
+GET {{preliminarServicios_HostAddress}}/api/especialidad
+Accept: application/json
+
+###
+GET {{preliminarServicios_HostAddress}}/api/especialidad/1
