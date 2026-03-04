@@ -1,12 +1,13 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public interface ICitaService
 {
-    void AgregarCita(CreateCitaDto cita);
+    Cita AgregarCita(CreateCitaDto cita);
     List<CitaDto> ObtenerCitas();
     void EliminarCita(int id);
-    void ActualizarCita(int id, CreateCitaDto cita);   
+    Cita ActualizarCita(int id, CreateCitaDto cita);   
 }

@@ -1,12 +1,13 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public interface IPacienteService
 {
-    List<PacienteDto> ObtenerPacientes();
-    void AgregarPaciente(CreatePacienteDto paciente);
+    List<Paciente> ObtenerPacientes();
+    Paciente AgregarPaciente(CreatePacienteDto paciente);
     void EliminarPaciente(int id);
-    void ActualizarPaciente(int id, CreatePacienteDto paciente); 
+    Paciente ActualizarPaciente(int id, CreatePacienteDto paciente); 
 }

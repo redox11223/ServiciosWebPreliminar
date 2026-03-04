@@ -1,20 +1,26 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public class EspecialidadService : IEspecialidadService
 {
-    private readonly List<EspecialidadDto> _especialidades = [];
+    private readonly List<Especialidad> _especialidades = [];
     private int _nextId = 1;
-    public void ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad)
+    public Especialidad ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad)
     {
-        throw new NotImplementedException();
+       throw new NotImplementedException();
     }
 
-    public void AgregarEspecialidad(CreateEspecialidadDto especialidad)
+    public Especialidad AgregarEspecialidad(CreateEspecialidadDto especialidad)
     {
-        throw new NotImplementedException();
+        Especialidad newEspecialidad=new(){
+            Id=_nextId++,
+            Nombre=especialidad.Nombre
+            };
+        _especialidades.Add(newEspecialidad);
+        return newEspecialidad;
     }
 
     public void EliminarEspecialidad(int id)
@@ -22,7 +28,7 @@ public class EspecialidadService : IEspecialidadService
         throw new NotImplementedException();
     }
 
-    public List<EspecialidadDto> ObtenerEspecialidades()
+    public List<Especialidad> ObtenerEspecialidades()
     {
         throw new NotImplementedException();
     }
