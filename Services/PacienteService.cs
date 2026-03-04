@@ -23,6 +23,11 @@ public class PacienteService : IPacienteService
         throw new NotImplementedException();
     }
 
+    public Paciente ObtenerPaciente(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public List<Paciente> ObtenerPacientes()
     {
         throw new NotImplementedException();
