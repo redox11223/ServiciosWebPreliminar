@@ -1,23 +1,24 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public class MedicoService : IMedicoService
 {
-    private readonly List<MedicoDto> _medicos = [];
+    private readonly List<Medico> _medicos = [];
     private int _nextId = 1;
     private readonly IEspecialidadService _especialidadService;
     public MedicoService(IEspecialidadService especialidadService)
     {
         _especialidadService = especialidadService;
     }
-    public void ActualizarMedico(int id, CreateMedicoDto medico)
+    public Medico ActualizarMedico(int id, CreateMedicoDto medico)
     {
         throw new NotImplementedException();
     }
 
-    public void AgregarMedico(CreateMedicoDto medico)
+    public Medico AgregarMedico(CreateMedicoDto medico)
     {
         throw new NotImplementedException();
     }
@@ -27,7 +28,7 @@ public class MedicoService : IMedicoService
         throw new NotImplementedException();
     }
 
-    public List<MedicoDto> ObtenerMedicos()
+    public List<Medico> ObtenerMedicos()
     {
         throw new NotImplementedException();
     }

@@ -1,13 +1,14 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public interface IEspecialidadService
 {
-    void AgregarEspecialidad(CreateEspecialidadDto especialidad);
-    List<EspecialidadDto> ObtenerEspecialidades();
+    Especialidad AgregarEspecialidad(CreateEspecialidadDto especialidad);
+    List<Especialidad> ObtenerEspecialidades();
     void EliminarEspecialidad(int id);
-    void ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad);
+    Especialidad ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad);
     
 }

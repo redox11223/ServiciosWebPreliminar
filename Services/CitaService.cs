@@ -1,5 +1,6 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
@@ -16,12 +17,12 @@ public class CitaService : ICitaService
         _medicoService = medicoService;
     }
 
-    public void ActualizarCita(int id, CreateCitaDto cita)
+    public Cita ActualizarCita(int id, CreateCitaDto cita)
     {
         throw new NotImplementedException();
     }
 
-    public void AgregarCita(CreateCitaDto cita)
+    public Cita AgregarCita(CreateCitaDto cita)
     {
         throw new NotImplementedException();
     }

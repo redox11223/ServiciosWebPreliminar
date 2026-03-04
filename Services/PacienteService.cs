@@ -1,18 +1,19 @@
 using System;
 using preliminarServicios.Models.Dtos;
+using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public class PacienteService : IPacienteService
 {
-    private readonly List<PacienteDto> _pacientes = [];
+    private readonly List<Paciente> _pacientes = [];
     private int _nextId = 1;
-    public void ActualizarPaciente(int id, CreatePacienteDto paciente)
+    public Paciente ActualizarPaciente(int id, CreatePacienteDto paciente)
     {
         throw new NotImplementedException();
     }
 
-    public void AgregarPaciente(CreatePacienteDto paciente)
+    public Paciente AgregarPaciente(CreatePacienteDto paciente)
     {
         throw new NotImplementedException();
     }
@@ -22,7 +23,7 @@ public class PacienteService : IPacienteService
         throw new NotImplementedException();
     }
 
-    public List<PacienteDto> ObtenerPacientes()
+    public List<Paciente> ObtenerPacientes()
     {
         throw new NotImplementedException();
     }
