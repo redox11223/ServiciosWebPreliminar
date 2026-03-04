@@ -36,4 +36,9 @@ public class CitaService : ICitaService
     {
         throw new NotImplementedException();
     }
+
+    public Cita ObtenerCita(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

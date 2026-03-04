@@ -8,6 +8,7 @@ public interface IEspecialidadService
 {
     Especialidad AgregarEspecialidad(CreateEspecialidadDto especialidad);
     List<Especialidad> ObtenerEspecialidades();
+    Especialidad ObtenerEspecialidad(int id);
     void EliminarEspecialidad(int id);
     Especialidad ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad);
     

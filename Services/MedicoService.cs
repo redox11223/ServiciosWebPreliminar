@@ -32,4 +32,9 @@ public class MedicoService : IMedicoService
     {
         throw new NotImplementedException();
     }
+
+    public Medico ObtenerMedico(int id)
+    {
+        throw new NotImplementedException();
+    }
 }
