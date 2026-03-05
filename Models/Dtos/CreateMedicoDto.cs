@@ -13,5 +13,9 @@ public record class CreateMedicoDto(
 
     [Required] string NumeroLicencia,
 
-    [Phone] string? Telefono
+    [Phone] string? Telefono,
+    
+    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una especialidad válida")]
+    int EspecialidadId    
 );
