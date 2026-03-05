@@ -24,11 +24,11 @@ public class PacienteService : IPacienteService
         return new Paciente()
         {
             Id = existingPaciente.Id,
-            Nombre = existingPaciente.Nombre,
-            Apellido = existingPaciente.Apellido,
-            Dni = existingPaciente.Dni,
-            Email = existingPaciente.Email,
-            Telefono = existingPaciente.Telefono,
+            Nombre = existingPaciente.Nombre.Trim(),
+            Apellido = existingPaciente.Apellido.Trim(),
+            Dni = existingPaciente.Dni.Trim(),
+            Email = existingPaciente.Email.Trim(),
+            Telefono = existingPaciente.Telefono?.Trim(),
             FechaNacimiento = existingPaciente.FechaNacimiento
         };        
     }
@@ -45,11 +45,11 @@ public class PacienteService : IPacienteService
         }
         Paciente newPaciente= new(){
             Id=_nextId++,
-            Nombre=paciente.Nombre,
-            Apellido=paciente.Apellido,
-            Dni=paciente.Dni,
-            Email=paciente.Email,
-            Telefono=paciente.Telefono,
+            Nombre=paciente.Nombre.Trim(),
+            Apellido=paciente.Apellido.Trim(),
+            Dni=paciente.Dni.Trim(),
+            Email=paciente.Email.Trim(),
+            Telefono=paciente.Telefono?.Trim(),
             FechaNacimiento=paciente.FechaNacimiento
         };
         _pacientes.Add(newPaciente);
