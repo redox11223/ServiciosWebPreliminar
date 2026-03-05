@@ -3,6 +3,6 @@ using System.ComponentModel.DataAnnotations;
 public record class CreateEspecialidadDto(    
     [Required]
     [Length(3, 100)]
-    [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El nombre solo puede contener letras y espacios")]
+    [RegularExpression(@"^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El nombre solo puede contener letras y no puede estar vacío o solo espacios")]
     string Nombre
 );
