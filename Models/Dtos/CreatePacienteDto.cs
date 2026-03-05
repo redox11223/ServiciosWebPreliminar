@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations;
 public record class CreatePacienteDto(
     [Required] 
     [Length(3, 100)]
-    [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El nombre solo puede contener letras y espacios")] 
+    [RegularExpression(@"^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El nombre solo puede contener letras y no puede estar vacío o solo espacios")]
     string Nombre,
     
     [Required]
     [Length(3, 100)]
-    [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El apellido solo puede contener letras y espacios")] 
+    [RegularExpression(@"^(?!\s*$)[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El nombre solo puede contener letras y no puede estar vacío o solo espacios")]
     string Apellido,
     
     [Required]
-    [RegularExpression(@"^\d{8}$", ErrorMessage = "El DNI debe tener exactamente 8 dígitos.")]
+    [RegularExpression(@"^(?!\s*$)\d{8}$", ErrorMessage = "El DNI debe tener exactamente 8 dígitos.")]
     string Dni,
 
     [Required]
