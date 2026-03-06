@@ -6,9 +6,9 @@ namespace preliminarServicios.Services;
 
 public interface IPacienteService
 {
-    List<Paciente> ObtenerPacientes();
-    Paciente AgregarPaciente(CreatePacienteDto paciente);
-    Paciente ObtenerPaciente(int id);
+    List<PacienteDto> ObtenerPacientes();
+    PacienteDto AgregarPaciente(CreatePacienteDto paciente);
+    PacienteDto ObtenerPaciente(int id);
     void EliminarPaciente(int id);
-    Paciente ActualizarPaciente(int id, CreatePacienteDto paciente); 
+    PacienteDto ActualizarPaciente(int id, CreatePacienteDto paciente); 
 }
