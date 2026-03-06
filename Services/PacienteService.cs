@@ -8,7 +8,7 @@ public class PacienteService : IPacienteService
 {
     private readonly List<Paciente> _pacientes = [];
     private int _nextId = 1;
-    public Paciente ActualizarPaciente(int id, CreatePacienteDto paciente)
+    public PacienteDto ActualizarPaciente(int id, CreatePacienteDto paciente)
     {
         var existingPaciente = _pacientes.FirstOrDefault(p => p.Id == id) ?? throw new KeyNotFoundException("Este paciente no existe");
         if (_pacientes.Any(p => p.Dni.Equals(paciente.Dni,StringComparison.OrdinalIgnoreCase) && p.Id != id))
@@ -21,19 +21,11 @@ public class PacienteService : IPacienteService
         existingPaciente.Email = paciente.Email;
         existingPaciente.Telefono = paciente.Telefono;
         existingPaciente.FechaNacimiento = paciente.FechaNacimiento;
-        return new Paciente()
-        {
-            Id = existingPaciente.Id,
-            Nombre = existingPaciente.Nombre.Trim(),
-            Apellido = existingPaciente.Apellido.Trim(),
-            Dni = existingPaciente.Dni.Trim(),
-            Email = existingPaciente.Email.Trim(),
-            Telefono = existingPaciente.Telefono?.Trim(),
-            FechaNacimiento = existingPaciente.FechaNacimiento
-        };        
+        return new PacienteDto(existingPaciente.Id, $"{existingPaciente.Nombre} {existingPaciente.Apellido}", existingPaciente.Dni, existingPaciente.Email, existingPaciente.Telefono, existingPaciente.FechaNacimiento);
+             
     }
 
-    public Paciente AgregarPaciente(CreatePacienteDto paciente)
+    public PacienteDto AgregarPaciente(CreatePacienteDto paciente)
     {
         if( _pacientes.Any(p => p.Dni.Equals(paciente.Dni,StringComparison.OrdinalIgnoreCase)))
         {
@@ -43,17 +35,25 @@ public class PacienteService : IPacienteService
         {
             throw new InvalidOperationException("Este Email ya existe");
         }
-        Paciente newPaciente= new(){
-            Id=_nextId++,
-            Nombre=paciente.Nombre.Trim(),
-            Apellido=paciente.Apellido.Trim(),
-            Dni=paciente.Dni.Trim(),
-            Email=paciente.Email.Trim(),
-            Telefono=paciente.Telefono?.Trim(),
-            FechaNacimiento=paciente.FechaNacimiento
+        var newPaciente = new Paciente
+        {
+            Id = _nextId++,
+            Nombre = paciente.Nombre.Trim(),
+            Apellido = paciente.Apellido.Trim(),
+            Dni = paciente.Dni.Trim(),
+            Email = paciente.Email.Trim(),
+            Telefono = paciente.Telefono?.Trim(),
+            FechaNacimiento = paciente.FechaNacimiento
         };
         _pacientes.Add(newPaciente);
-        return newPaciente;
+        return new PacienteDto(
+            newPaciente.Id,
+            $"{newPaciente.Nombre} {newPaciente.Apellido}",
+            newPaciente.Dni,
+            newPaciente.Email,
+            newPaciente.Telefono,
+            newPaciente.FechaNacimiento
+        );
     }
 
     public void EliminarPaciente(int id)
@@ -62,23 +62,28 @@ public class PacienteService : IPacienteService
         _pacientes.Remove(paciente);
     }
 
-    public Paciente ObtenerPaciente(int id)
+    public PacienteDto ObtenerPaciente(int id)
     {
         var paciente = _pacientes.FirstOrDefault(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente no existe");
-        return new Paciente()
-        {
-            Id = paciente.Id,
-            Nombre = paciente.Nombre,
-            Apellido= paciente.Apellido,
-            Dni= paciente.Dni,
-            Telefono=paciente.Telefono,
-            FechaNacimiento=paciente.FechaNacimiento,
-            Email=paciente.Email
-        };
+        return new PacienteDto(
+            paciente.Id,
+            $"{paciente.Nombre} {paciente.Apellido}",
+            paciente.Dni,
+            paciente.Email,
+            paciente.Telefono,
+            paciente.FechaNacimiento
+        );
     }
 
-    public List<Paciente> ObtenerPacientes()
+    public List<PacienteDto> ObtenerPacientes()
     {
-        return _pacientes.ToList();
+        return _pacientes.Select(p => new PacienteDto(
+            p.Id,
+            $"{p.Nombre} {p.Apellido}",
+            p.Dni,
+            p.Email,
+            p.Telefono,
+            p.FechaNacimiento
+        )).ToList();
     }
 }
