@@ -60,4 +60,9 @@ public class EspecialidadService : IEspecialidadService
     {
         return _especialidades.ToList();
     }
+
+    public bool ExisteEspecialidad(int id)
+    {
+        return _especialidades.Any(e => e.Id == id);
+    }
 }

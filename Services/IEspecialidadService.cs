@@ -11,5 +11,5 @@ public interface IEspecialidadService
     Especialidad ObtenerEspecialidad(int id);
     void EliminarEspecialidad(int id);
     Especialidad ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad);
-    
+    bool ExisteEspecialidad(int id);
 }
