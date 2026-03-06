@@ -6,9 +6,9 @@ namespace preliminarServicios.Services;
 
 public interface ICitaService
 {
-    Cita AgregarCita(CreateCitaDto cita);
+    CitaDto AgregarCita(CreateCitaDto cita);
     List<CitaDto> ObtenerCitas();
-    Cita ObtenerCita(int id);
+    CitaDto ObtenerCita(int id);
     void EliminarCita(int id);
-    Cita ActualizarCita(int id, CreateCitaDto cita);   
+    CitaDto ActualizarCita(int id, CreateCitaDto cita);   
 }

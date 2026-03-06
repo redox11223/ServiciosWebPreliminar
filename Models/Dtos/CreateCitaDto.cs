@@ -18,7 +18,5 @@ public record class CreateCitaDto(
     [Required]
     DateTime FechaInicio,
     
-    [Required]
-    DateTime FechaFin,
     string? Observaciones
 );
