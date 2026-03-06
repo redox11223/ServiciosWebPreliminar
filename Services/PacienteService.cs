@@ -21,7 +21,7 @@ public class PacienteService : IPacienteService
         existingPaciente.Email = paciente.Email;
         existingPaciente.Telefono = paciente.Telefono;
         existingPaciente.FechaNacimiento = paciente.FechaNacimiento;
-        return new PacienteDto(existingPaciente.Id, $"{existingPaciente.Nombre} {existingPaciente.Apellido}", existingPaciente.Dni, existingPaciente.Email, existingPaciente.Telefono, existingPaciente.FechaNacimiento);
+        return MapearAPacienteDto(existingPaciente);
              
     }
 
@@ -46,14 +46,7 @@ public class PacienteService : IPacienteService
             FechaNacimiento = paciente.FechaNacimiento
         };
         _pacientes.Add(newPaciente);
-        return new PacienteDto(
-            newPaciente.Id,
-            $"{newPaciente.Nombre} {newPaciente.Apellido}",
-            newPaciente.Dni,
-            newPaciente.Email,
-            newPaciente.Telefono,
-            newPaciente.FechaNacimiento
-        );
+        return MapearAPacienteDto(newPaciente);
     }
 
     public void EliminarPaciente(int id)
@@ -65,6 +58,16 @@ public class PacienteService : IPacienteService
     public PacienteDto ObtenerPaciente(int id)
     {
         var paciente = _pacientes.FirstOrDefault(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente no existe");
+        return MapearAPacienteDto(paciente);
+    }
+
+    public List<PacienteDto> ObtenerPacientes()
+    {
+        return _pacientes.Select(MapearAPacienteDto).ToList();
+    }
+
+    private PacienteDto MapearAPacienteDto(Paciente paciente)
+    {
         return new PacienteDto(
             paciente.Id,
             $"{paciente.Nombre} {paciente.Apellido}",
@@ -73,17 +76,5 @@ public class PacienteService : IPacienteService
             paciente.Telefono,
             paciente.FechaNacimiento
         );
-    }
-
-    public List<PacienteDto> ObtenerPacientes()
-    {
-        return _pacientes.Select(p => new PacienteDto(
-            p.Id,
-            $"{p.Nombre} {p.Apellido}",
-            p.Dni,
-            p.Email,
-            p.Telefono,
-            p.FechaNacimiento
-        )).ToList();
     }
 }
