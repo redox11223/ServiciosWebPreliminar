@@ -18,7 +18,7 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Medico> AgregarMedico(CreateMedicoDto medico)
+        public ActionResult<MedicoResponseDto> AgregarMedico(CreateMedicoDto medico)
         {
             try
             {
@@ -32,13 +32,13 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Medico>> ObtenerMedicos()
+        public ActionResult<List<MedicoResponseDto>> ObtenerMedicos()
         {
             return Ok(_medicoService.ObtenerMedicos());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Medico> ObtenerMedico(int id)
+        public ActionResult<MedicoResponseDto> ObtenerMedico(int id)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Medico> ActualizarMedico(int id, CreateMedicoDto medico)
+        public ActionResult<MedicoResponseDto> ActualizarMedico(int id, CreateMedicoDto medico)
         {
             try
             {
