@@ -13,7 +13,7 @@ public class MedicoService : IMedicoService
     {
         _especialidadService = especialidadService;
     }
-    public Medico ActualizarMedico(int id, CreateMedicoDto medico)
+    public MedicoResponseDto ActualizarMedico(int id, CreateMedicoDto medico)
     {
         var existingMedico = _medicos.FirstOrDefault(m => m.Id == id) 
             ?? throw new KeyNotFoundException("El médico no existe");
