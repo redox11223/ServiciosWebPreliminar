@@ -14,6 +14,7 @@ builder.Services.AddSingleton<IPacienteService, PacienteService>();
 builder.Services.AddSingleton<IMedicoService, MedicoService>();
 builder.Services.AddSingleton<IEspecialidadService, EspecialidadService>();
 builder.Services.AddSingleton<ICitaService, CitaService>();
+builder.Services.AddSingleton<IHorarioMedicoService, HorarioMedicoService>();
 
 var app = builder.Build();
 
