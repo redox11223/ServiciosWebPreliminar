@@ -23,7 +23,6 @@ public class HorarioMedicoService : IHorarioMedicoService
         horarioExistente.DiaSemana = horario.DiaSemana;
         horarioExistente.HoraInicio = horario.HoraInicio;
         horarioExistente.HoraFin = horario.HoraFin;
-        horarioExistente.DuracionCita = horario.DuracionCita;
 
         return MapToDto(horarioExistente, medico);
     }
@@ -37,8 +36,7 @@ public class HorarioMedicoService : IHorarioMedicoService
             MedicoId = horario.MedicoId,
             DiaSemana = horario.DiaSemana,
             HoraInicio = horario.HoraInicio,
-            HoraFin = horario.HoraFin,
-            DuracionCita = horario.DuracionCita
+            HoraFin = horario.HoraFin
         };
         _horarios.Add(newHorario);
         return MapToDto(newHorario, medico);
@@ -82,8 +80,7 @@ public class HorarioMedicoService : IHorarioMedicoService
             new MedicoResumenDto(medico.Id, $"{medico.Nombre} {medico.Apellido}", medico.EspecialidadNombre),
             horario.DiaSemana,
             horario.HoraInicio,
-            horario.HoraFin,
-            horario.DuracionCita
+            horario.HoraFin
         );
     }
 
