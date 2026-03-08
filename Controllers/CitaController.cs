@@ -7,9 +7,9 @@ namespace preliminarServicios.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CitaController(CitaService citaService) : ControllerBase
+    public class CitaController(ICitaService citaService) : ControllerBase
     { 
-        private readonly CitaService _citaService = citaService;
+        private readonly ICitaService _citaService = citaService;
 
         [HttpPost]
         public ActionResult<CitaDto> AgregarCita([FromBody] CreateCitaDto cita)
