@@ -17,5 +17,8 @@ public record class CreateMedicoDto(
     
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una especialidad válida")]
-    int EspecialidadId    
+    int EspecialidadId, 
+
+    [Range(15, 120, ErrorMessage = "La duración de la cita debe ser entre 15 y 120 minutos")]
+    int DuracionCita = 30   
 );

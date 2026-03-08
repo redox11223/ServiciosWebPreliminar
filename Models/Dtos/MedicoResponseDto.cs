@@ -7,5 +7,6 @@ public record class MedicoResponseDto(
     string NumeroLicencia,
     string? Telefono,
     int EspecialidadId,
-    string EspecialidadNombre
+    string EspecialidadNombre,
+    int DuracionCita
 );

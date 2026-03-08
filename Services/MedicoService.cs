@@ -38,16 +38,9 @@ public class MedicoService : IMedicoService
         existingMedico.NumeroLicencia = numeroLicencia;
         existingMedico.Telefono = medico.Telefono?.Trim();
         existingMedico.EspecialidadId = medico.EspecialidadId;
+        existingMedico.DuracionCita = medico.DuracionCita;
 
-        return new MedicoResponseDto(
-            existingMedico.Id,
-            existingMedico.Nombre,
-            existingMedico.Apellido,
-            existingMedico.NumeroLicencia,
-            existingMedico.Telefono,
-            existingMedico.EspecialidadId,
-            especialidad.Nombre
-        );
+        return MapearDto(existingMedico);
     }
 
     public MedicoResponseDto AgregarMedico(CreateMedicoDto medico)
@@ -73,20 +66,13 @@ public class MedicoService : IMedicoService
             Apellido = medico.Apellido.Trim(),
             NumeroLicencia = numeroLicencia,
             Telefono = medico.Telefono?.Trim(),
-            EspecialidadId = medico.EspecialidadId
+            EspecialidadId = medico.EspecialidadId,
+            DuracionCita = medico.DuracionCita
         };
         
         _medicos.Add(newMedico);
         
-        return new MedicoResponseDto(
-            newMedico.Id,
-            newMedico.Nombre,
-            newMedico.Apellido,
-            newMedico.NumeroLicencia,
-            newMedico.Telefono,
-            newMedico.EspecialidadId,
-            especialidad.Nombre
-        );
+        return MapearDto(newMedico);
     }
     public void EliminarMedico(int id)
     {
@@ -100,15 +86,7 @@ public class MedicoService : IMedicoService
         return _medicos.Select(m => 
         {
             var especialidad = _especialidadService.ObtenerEspecialidad(m.EspecialidadId);
-            return new MedicoResponseDto(
-                m.Id,
-                m.Nombre,
-                m.Apellido,
-                m.NumeroLicencia,
-                m.Telefono,
-                m.EspecialidadId,
-                especialidad.Nombre
-            );
+            return MapearDto(m);
         }).ToList();
     }
 
@@ -119,6 +97,12 @@ public class MedicoService : IMedicoService
         
         var especialidad = _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
         
+        return MapearDto(medico);
+    }
+
+    private MedicoResponseDto MapearDto(Medico medico)
+    {
+        var especialidad = _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
         return new MedicoResponseDto(
             medico.Id,
             medico.Nombre,
@@ -126,7 +110,8 @@ public class MedicoService : IMedicoService
             medico.NumeroLicencia,
             medico.Telefono,
             medico.EspecialidadId,
-            especialidad.Nombre
+            especialidad.Nombre,
+            medico.DuracionCita
         );
     }
 }
