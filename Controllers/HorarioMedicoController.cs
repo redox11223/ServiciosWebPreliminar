@@ -69,18 +69,30 @@ namespace preliminarServicios.Controllers
         [HttpGet("medico/{medicoId}")]
         public ActionResult<List<HorarioMedicoDto>> ObtenerHorariosPorMedicoId(int medicoId)
         {
-            var horarios = _horarioMedicoService.ObtenerHorarioPorMedicoId(medicoId);
-            if (horarios == null || horarios.Count == 0)
-                return NotFound($"No se encontraron horarios para el médico.");
-            
-            return Ok(horarios);
+            try
+            {
+                var horarios = _horarioMedicoService.ObtenerHorarioPorMedicoId(medicoId);
+                if (horarios.Count == 0)
+                    return NotFound($"No se encontraron horarios para el médico.");
+                return Ok(horarios);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet]
         public ActionResult<List<HorarioMedicoDto>> ListarHorarios()
         {
-            var horarios = _horarioMedicoService.ListarHorarios();
-            return Ok(horarios);
+            try
+            {
+                return Ok(_horarioMedicoService.ListarHorarios());
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
