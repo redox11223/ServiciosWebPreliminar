@@ -25,6 +25,10 @@ namespace preliminarServicios.Controllers
                 var newMedico = _medicoService.AgregarMedico(medico);
                 return CreatedAtAction(nameof(ObtenerMedico), new { id = newMedico.Id }, newMedico);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (InvalidOperationException ex)
             {
                 return Conflict(ex.Message);
@@ -34,7 +38,14 @@ namespace preliminarServicios.Controllers
         [HttpGet]
         public ActionResult<List<MedicoResponseDto>> ObtenerMedicos()
         {
-            return Ok(_medicoService.ObtenerMedicos());
+            try
+            {
+                return Ok(_medicoService.ObtenerMedicos());
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
