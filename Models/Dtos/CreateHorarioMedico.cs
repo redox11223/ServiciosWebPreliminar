@@ -14,10 +14,7 @@ public record class CreateHorarioMedicoDto(
     TimeSpan HoraInicio,
     
     [Required(ErrorMessage = "La hora de fin es obligatoria.")]
-    TimeSpan HoraFin,
-
-    [Range(5, 120, ErrorMessage = "La duración de la cita debe ser entre 5 y 120 minutos.")]
-    int DuracionCita = 30
+    TimeSpan HoraFin
 ):IValidatableObject
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -27,10 +24,6 @@ public record class CreateHorarioMedicoDto(
             yield return new ValidationResult("La hora de fin debe ser mayor que la hora de inicio.", [nameof(HoraFin)]);
         }
 
-        if ((HoraFin-HoraInicio).Minutes < DuracionCita)
-        {
-            yield return new ValidationResult("El rango de horario debe permitir al menos una cita.", [nameof(DuracionCita),nameof(HoraFin)]);
-        }
         if(HoraInicio < TimeSpan.FromHours(6) || HoraFin > TimeSpan.FromHours(22))
         {
             yield return new ValidationResult("El horario debe estar entre las 6:00 y las 22:00.", [nameof(HoraInicio), nameof(HoraFin)]);

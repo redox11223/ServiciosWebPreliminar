@@ -5,6 +5,5 @@ public record class HorarioMedicoDto(
     MedicoResumenDto Medico,
     DayOfWeek DiaSemana,
     TimeSpan HoraInicio,
-    TimeSpan HoraFin,
-    int DuracionCita
+    TimeSpan HoraFin
 );
