@@ -20,7 +20,7 @@ public class EspecialidadService : IEspecialidadService
         return new Especialidad()
         {
             Id = existingEspecialidad.Id,
-            Nombre = existingEspecialidad.Nombre
+            Nombre = existingEspecialidad.Nombre.Trim()
         };
     }
 
@@ -33,7 +33,7 @@ public class EspecialidadService : IEspecialidadService
         
         Especialidad newEspecialidad=new(){
             Id=_nextId++,
-            Nombre=especialidad.Nombre
+            Nombre=especialidad.Nombre.Trim()
             };
         _especialidades.Add(newEspecialidad);
         return newEspecialidad;
