@@ -195,6 +195,7 @@ erDiagram
 
 ## Contacto
 
+Miguel Angel - miguelangel241296@gmail.com
 Project Link: [https://github.com/redox11223/ServiciosWebPreliminar](https://github.com/redox11223/ServiciosWebPreliminar)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
