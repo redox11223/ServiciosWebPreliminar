@@ -10,8 +10,6 @@
   <p align="center">
     API REST desarrollada en .NET 10 para la gestión de citas médicas, pacientes, médicos, especialidades y horarios.
     <br />
-    <a href="https://github.com/redox11223/ServiciosWebPreliminar"><strong>Explorar el repositorio »</strong></a>
-    <br />
   </p>
 </div>
 
@@ -205,6 +203,7 @@ Project Link: [https://github.com/redox11223/ServiciosWebPreliminar](https://git
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-url]: https://github.com/MartinTrillo22
+[contributors-url]: https://github.com/DevSer12
 [linkedin-url]: https://www.linkedin.com/in/miguel-angel-lermo-621374107/
 [contributors-shield]: https://img.shields.io/github/contributors/redox11223/ServiciosWebPreliminar.svg?style=for-the-badge
 [contributors-url]: https://github.com/redox11223/ServiciosWebPreliminar/graphs/contributors
