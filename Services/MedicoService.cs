@@ -39,6 +39,7 @@ public class MedicoService : IMedicoService
         existingMedico.Telefono = medico.Telefono?.Trim();
         existingMedico.EspecialidadId = medico.EspecialidadId;
         existingMedico.DuracionCita = medico.DuracionCita;
+        existingMedico.FechaModificacion = DateTime.Now;
 
         return MapearDto(existingMedico);
     }

@@ -23,6 +23,7 @@ public class HorarioMedicoService : IHorarioMedicoService
         horarioExistente.DiaSemana = horario.DiaSemana;
         horarioExistente.HoraInicio = horario.HoraInicio;
         horarioExistente.HoraFin = horario.HoraFin;
+        horarioExistente.FechaModificacion = DateTime.Now;
 
         return MapToDto(horarioExistente, medico);
     }

@@ -38,6 +38,7 @@ public class CitaService : ICitaService
         citaExistente.FechaFin = cita.FechaInicio.AddMinutes(medico.DuracionCita);
         citaExistente.Observaciones = cita.Observaciones;
         citaExistente.Estado = CitaEstado.Confirmada;
+        citaExistente.FechaModificacion = DateTime.Now;
 
         return MapearDto(citaExistente, paciente, medico);
     }
@@ -119,7 +120,10 @@ public class CitaService : ICitaService
             cita.FechaInicio,
             cita.FechaFin,
             cita.Motivo,
-            cita.Estado.ToString()
+            cita.Estado.ToString(),
+            cita.FechaCreacion,
+            cita.FechaModificacion
+
         );
     }
 }

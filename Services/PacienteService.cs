@@ -21,6 +21,7 @@ public class PacienteService : IPacienteService
         existingPaciente.Email = paciente.Email;
         existingPaciente.Telefono = paciente.Telefono;
         existingPaciente.FechaNacimiento = paciente.FechaNacimiento;
+        existingPaciente.FechaModificacion = DateTime.Now;
         return MapearAPacienteDto(existingPaciente);
              
     }
