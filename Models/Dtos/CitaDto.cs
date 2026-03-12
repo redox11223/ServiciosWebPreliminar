@@ -7,5 +7,7 @@ public record class CitaDto(
     DateTime FechaInicio,
     DateTime FechaFin,
     string Motivo,
-    string Estado
+    string Estado,
+    DateTime FechaCreacion,
+    DateTime? FechaModificacion
 );

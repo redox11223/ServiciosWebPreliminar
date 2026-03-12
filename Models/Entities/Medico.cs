@@ -2,9 +2,8 @@ using System;
 
 namespace preliminarServicios.Models.Entities;
 
-public class Medico
+public class Medico:EntidadBase
 {
-    public int Id{get;set;}
     public required string Nombre{get;set;}
     public required string Apellido{get;set;}
     public required string NumeroLicencia{get;set;}

@@ -17,6 +17,7 @@ public class EspecialidadService : IEspecialidadService
             throw new InvalidOperationException("Esta especialidad ya existe");
         }
         existingEspecialidad.Nombre = especialidad.Nombre;
+        existingEspecialidad.FechaModificacion = DateTime.Now;
         return new Especialidad()
         {
             Id = existingEspecialidad.Id,
