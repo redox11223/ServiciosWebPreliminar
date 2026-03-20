@@ -5,10 +5,10 @@ namespace preliminarServicios.Services;
 
 public interface IHorarioMedicoService
 {
-    HorarioMedicoDto AgregarHorario(CreateHorarioMedicoDto horario);
-    HorarioMedicoDto ActualizarHorario(int id, CreateHorarioMedicoDto horario);
-    void EliminarHorario(int id);  
-    HorarioMedicoDto ObtenerHorarioPorId(int id);
-    List<HorarioMedicoDto> ObtenerHorarioPorMedicoId(int id);
-    List<HorarioMedicoDto> ListarHorarios();
+    Task<HorarioMedicoDto> AgregarHorario(CreateHorarioMedicoDto horario);
+    Task<HorarioMedicoDto> ActualizarHorario(int id, CreateHorarioMedicoDto horario);
+    Task EliminarHorario(int id);  
+    Task<HorarioMedicoDto> ObtenerHorarioPorId(int id);
+    Task<IEnumerable<HorarioMedicoDto>> ObtenerHorariosPorMedicoId(int id);
+    Task<IEnumerable<HorarioMedicoDto>> ListarHorarios();
 }

@@ -18,11 +18,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPost]
-        public ActionResult<MedicoResponseDto> AgregarMedico(CreateMedicoDto medico)
+        public async Task<ActionResult<MedicoResponseDto>> AgregarMedico(CreateMedicoDto medico)
         {
             try
             {
-                var newMedico = _medicoService.AgregarMedico(medico);
+                var newMedico = await _medicoService.AgregarMedico(medico);
                 return CreatedAtAction(nameof(ObtenerMedico), new { id = newMedico.Id }, newMedico);
             }
             catch (KeyNotFoundException ex)
@@ -36,11 +36,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<MedicoResponseDto>> ObtenerMedicos()
+        public async Task<ActionResult<List<MedicoResponseDto>>> ObtenerMedicos()
         {
             try
             {
-                return Ok(_medicoService.ObtenerMedicos());
+                return Ok(await _medicoService.ObtenerMedicos());
             }
             catch (KeyNotFoundException ex)
             {
@@ -49,11 +49,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<MedicoResponseDto> ObtenerMedico(int id)
+        public async Task<ActionResult<MedicoResponseDto>> ObtenerMedico(int id)
         {
             try
             {
-                return Ok(_medicoService.ObtenerMedico(id));
+                return Ok(await _medicoService.ObtenerMedico(id));
             }
             catch (KeyNotFoundException ex)
             {
@@ -62,11 +62,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult EliminarMedico(int id)
+        public async Task<IActionResult> EliminarMedico(int id)
         {
             try
             {
-                _medicoService.EliminarMedico(id);
+                await _medicoService.EliminarMedico(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -76,11 +76,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<MedicoResponseDto> ActualizarMedico(int id, CreateMedicoDto medico)
+        public async Task<ActionResult<MedicoResponseDto>> ActualizarMedico(int id, CreateMedicoDto medico)
         {
             try
             {
-                var updatedMedico = _medicoService.ActualizarMedico(id, medico);
+                var updatedMedico = await _medicoService.ActualizarMedico(id, medico);
                 return Ok(updatedMedico);
             }
             catch (KeyNotFoundException ex)

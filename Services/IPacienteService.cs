@@ -1,14 +1,13 @@
 using System;
 using preliminarServicios.Models.Dtos;
-using preliminarServicios.Models.Entities;
 
 namespace preliminarServicios.Services;
 
 public interface IPacienteService
 {
-    List<PacienteDto> ObtenerPacientes();
-    PacienteDto AgregarPaciente(CreatePacienteDto paciente);
-    PacienteDto ObtenerPaciente(int id);
-    void EliminarPaciente(int id);
-    PacienteDto ActualizarPaciente(int id, CreatePacienteDto paciente); 
+    Task<IEnumerable<PacienteDto>> ObtenerPacientes();
+    Task<PacienteDto> AgregarPaciente(CreatePacienteDto paciente);
+    Task<PacienteDto> ObtenerPaciente(int id);
+    Task EliminarPaciente(int id);
+    Task<PacienteDto> ActualizarPaciente(int id, CreatePacienteDto paciente);
 }

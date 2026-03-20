@@ -1,34 +1,39 @@
 using System;
+using preliminarServicios.Data;
 using preliminarServicios.Models.Dtos;
 using preliminarServicios.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace preliminarServicios.Services;
 
 public class MedicoService : IMedicoService
 {
-    private readonly List<Medico> _medicos = [];
-    private int _nextId = 1;
+    private readonly ClinicaDbContext _context;
     private readonly IEspecialidadService _especialidadService;
-    public MedicoService(IEspecialidadService especialidadService)
+    public MedicoService(ClinicaDbContext context, IEspecialidadService especialidadService)
     {
+        _context = context;
         _especialidadService = especialidadService;
     }
-    public MedicoResponseDto ActualizarMedico(int id, CreateMedicoDto medico)
+    public async Task<MedicoResponseDto> ActualizarMedico(int id, CreateMedicoDto medico)
     {
-        var existingMedico = _medicos.FirstOrDefault(m => m.Id == id) 
+        var existingMedico = await _context.Medicos.Include(m => m.Especialidad).FirstOrDefaultAsync(m => m.Id == id) 
             ?? throw new KeyNotFoundException("El médico no existe");
 
-        if (!_especialidadService.ExisteEspecialidad(medico.EspecialidadId))
+        if (existingMedico.EspecialidadId != medico.EspecialidadId)
+        {
+            var especialidad = await _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
+            existingMedico.Especialidad = especialidad;
+        }
+
+         if (string.IsNullOrWhiteSpace(medico.NumeroLicencia))
         {
             throw new KeyNotFoundException("La especialidad especificada no existe");
         }
 
-        var especialidad = _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
-
         var numeroLicencia = medico.NumeroLicencia.Trim();
 
-        if (_medicos.Any(m => m.NumeroLicencia.Equals(numeroLicencia, StringComparison.OrdinalIgnoreCase) 
-            && m.Id != id))
+        if (await _context.Medicos.AnyAsync(m => m.NumeroLicencia==numeroLicencia && m.Id != id))
         {
             throw new InvalidOperationException("Ya existe un médico con este número de licencia");
         }
@@ -40,70 +45,71 @@ public class MedicoService : IMedicoService
         existingMedico.EspecialidadId = medico.EspecialidadId;
         existingMedico.DuracionCita = medico.DuracionCita;
         existingMedico.FechaModificacion = DateTime.Now;
+        await _context.SaveChangesAsync();
 
         return MapearDto(existingMedico);
     }
 
-    public MedicoResponseDto AgregarMedico(CreateMedicoDto medico)
+    public async Task<MedicoResponseDto> AgregarMedico(CreateMedicoDto medico)
     {
-        if (!_especialidadService.ExisteEspecialidad(medico.EspecialidadId))
-        {
-            throw new KeyNotFoundException("La especialidad especificada no existe");
-        }
-
-        var especialidad = _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
+       
+        var especialidad = await _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
 
         var numeroLicencia = medico.NumeroLicencia.Trim();
 
-        if (_medicos.Any(m => m.NumeroLicencia.Equals(numeroLicencia, StringComparison.OrdinalIgnoreCase)))
+        if (await _context.Medicos.AnyAsync(m => m.NumeroLicencia==numeroLicencia))
         {
             throw new InvalidOperationException("Ya existe un médico con este número de licencia");
         }
 
         Medico newMedico = new()
         {
-            Id = _nextId++,
             Nombre = medico.Nombre.Trim(),
             Apellido = medico.Apellido.Trim(),
             NumeroLicencia = numeroLicencia,
             Telefono = medico.Telefono?.Trim(),
             EspecialidadId = medico.EspecialidadId,
+            Especialidad = especialidad,
             DuracionCita = medico.DuracionCita
         };
         
-        _medicos.Add(newMedico);
+        _context.Add(newMedico);
+        await _context.SaveChangesAsync();
         
         return MapearDto(newMedico);
     }
-    public void EliminarMedico(int id)
+    public async Task EliminarMedico(int id)
     {
-        var medico = _medicos.FirstOrDefault(m => m.Id == id) 
+        var medico = await _context.Medicos.FirstOrDefaultAsync(m => m.Id == id) 
             ?? throw new KeyNotFoundException("El médico no existe");
-        _medicos.Remove(medico);
+        _context.Remove(medico);
+        await _context.SaveChangesAsync();
     }
 
-    public List<MedicoResponseDto> ObtenerMedicos()
+    public async Task<IEnumerable<MedicoResponseDto>> ObtenerMedicos()
     {
-        return _medicos.Select(m => 
-        {
-            var especialidad = _especialidadService.ObtenerEspecialidad(m.EspecialidadId);
-            return MapearDto(m);
-        }).ToList();
+        return await _context.Medicos.Include(m => m.Especialidad).Select(m => new MedicoResponseDto(
+            m.Id,
+            m.Nombre,
+            m.Apellido,
+            m.NumeroLicencia,
+            m.Telefono,
+            m.EspecialidadId,
+            m.Especialidad.Nombre,
+            m.DuracionCita
+        )).ToListAsync();
     }
 
-    public MedicoResponseDto ObtenerMedico(int id)
+    public async Task<MedicoResponseDto> ObtenerMedico(int id)
     {
-        var medico = _medicos.FirstOrDefault(m => m.Id == id) 
+        var medico = await _context.Medicos.Include(m => m.Especialidad).FirstOrDefaultAsync(m => m.Id == id) 
             ?? throw new KeyNotFoundException("El médico no existe");
-        
-        var especialidad = _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
         
         return MapearDto(medico);
     }
 
-    private MedicoResponseDto MapearDto(Medico medico)
+    private static MedicoResponseDto MapearDto(Medico medico)
     {
-        var especialidad = _especialidadService.ObtenerEspecialidad(medico.EspecialidadId);
         return new MedicoResponseDto(
             medico.Id,
             medico.Nombre,
@@ -111,7 +117,7 @@ public class MedicoService : IMedicoService
             medico.NumeroLicencia,
             medico.Telefono,
             medico.EspecialidadId,
-            especialidad.Nombre,
+            medico.Especialidad.Nombre,
             medico.DuracionCita
         );
     }
