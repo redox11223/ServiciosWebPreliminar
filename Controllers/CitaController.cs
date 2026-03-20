@@ -12,11 +12,11 @@ namespace preliminarServicios.Controllers
         private readonly ICitaService _citaService = citaService;
 
         [HttpPost]
-        public ActionResult<CitaDto> AgregarCita([FromBody] CreateCitaDto cita)
+        public async Task<ActionResult<CitaDto>> AgregarCita([FromBody] CreateCitaDto cita)
         {
             try
             {
-                var citaDto = _citaService.AgregarCita(cita);
+                var citaDto = await _citaService.AgregarCita(cita);
                 return CreatedAtAction(nameof(ObtenerCita), new { id = citaDto.Id }, citaDto);
             }
             catch (KeyNotFoundException ex)
@@ -30,11 +30,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<CitaDto> ObtenerCita(int id)
+        public async Task<ActionResult<CitaDto>> ObtenerCita(int id)
         {
             try
             {
-                var citaDto = _citaService.ObtenerCita(id);
+                var citaDto = await _citaService.ObtenerCita(id);
                 return Ok(citaDto);
             }
             catch (KeyNotFoundException ex)
@@ -44,11 +44,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<CitaDto>> ObtenerCitas()
+        public async Task<ActionResult<IEnumerable<CitaDto>>> ObtenerCitas()
         {
             try
             {
-                return Ok(_citaService.ObtenerCitas());
+                return Ok(await _citaService.ObtenerCitas());
             }
             catch (KeyNotFoundException ex)
             {
@@ -57,11 +57,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<CitaDto> ActualizarCita(int id, [FromBody] CreateCitaDto cita)
+        public async Task<ActionResult<CitaDto>> ActualizarCita(int id, [FromBody] CreateCitaDto cita)
         {
             try
             {
-                var citaDto = _citaService.ActualizarCita(id, cita);
+                var citaDto = await _citaService.ActualizarCita(id, cita);
                 return Ok(citaDto);
             }
             catch (KeyNotFoundException ex)
@@ -75,11 +75,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult EliminarCita(int id)
+        public async Task<IActionResult> EliminarCita(int id)
         {
             try
             {
-                _citaService.EliminarCita(id);
+                await _citaService.EliminarCita(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

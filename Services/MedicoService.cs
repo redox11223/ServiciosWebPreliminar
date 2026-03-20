@@ -82,7 +82,8 @@ public class MedicoService : IMedicoService
     {
         var medico = await _context.Medicos.FirstOrDefaultAsync(m => m.Id == id) 
             ?? throw new KeyNotFoundException("El médico no existe");
-        _context.Remove(medico);
+        medico.Activo = false; // Soft delete
+        medico.FechaEliminacion = DateTime.Now; // Registrar fecha de eliminación
         await _context.SaveChangesAsync();
     }
 

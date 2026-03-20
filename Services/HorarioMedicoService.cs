@@ -48,7 +48,8 @@ public class HorarioMedicoService : IHorarioMedicoService
     public async Task EliminarHorario(int id)
     {
         var horario = await _context.Horarios.FirstOrDefaultAsync(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
-        _context.Remove(horario);
+        horario.Activo = false;
+        horario.FechaEliminacion = DateTime.Now;
         await _context.SaveChangesAsync();
     }
 

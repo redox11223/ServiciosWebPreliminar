@@ -10,15 +10,11 @@ namespace preliminarServicios.Services;
 public class CitaService : ICitaService
 {
     private readonly ClinicaDbContext _context;
-    private readonly IPacienteService _pacienteService;
-    private readonly IMedicoService _medicoService;
     private readonly IHorarioMedicoService _horarioMedicoService;
 
-    public CitaService(ClinicaDbContext context, IPacienteService pacienteService, IMedicoService medicoService, IHorarioMedicoService horarioMedicoService)
+    public CitaService(ClinicaDbContext context, IHorarioMedicoService horarioMedicoService)
     {
         _context = context;
-        _pacienteService = pacienteService;
-        _medicoService = medicoService;
         _horarioMedicoService = horarioMedicoService;
     }
 
@@ -29,8 +25,8 @@ public class CitaService : ICitaService
         {
             throw new InvalidOperationException("No se puede actualizar una cita cancelada o completada.");
         }
-        var paciente = _pacienteService.ObtenerPaciente(cita.PacienteId);
-        var medico = _medicoService.ObtenerMedico(cita.MedicoId);
+        var paciente = await _context.Pacientes.FirstOrDefaultAsync(e=>e.Id==cita.PacienteId) ?? throw new KeyNotFoundException("Este paciente no existe");
+        var medico = await _context.Medicos.Include(m => m.Especialidad).FirstOrDefaultAsync(m => m.Id == cita.MedicoId) ?? throw new KeyNotFoundException("Este médico no existe");
         citaExistente.PacienteId = cita.PacienteId;
         citaExistente.MedicoId = cita.MedicoId;
         citaExistente.Costo = cita.Costo;
@@ -40,19 +36,19 @@ public class CitaService : ICitaService
         citaExistente.Observaciones = cita.Observaciones;
         citaExistente.Estado = CitaEstado.Confirmada;
         citaExistente.FechaModificacion = DateTime.Now;
-
-        return MapearDto(citaExistente, paciente, medico);
+        await _context.SaveChangesAsync();
+        return MapearDto(citaExistente);
     }
 
-    public CitaDto AgregarCita(CreateCitaDto cita)
+    public async Task<CitaDto> AgregarCita(CreateCitaDto cita)
     {
-        var paciente = _pacienteService.ObtenerPacienteAsync(cita.PacienteId);
-        var medico = _medicoService.ObtenerMedico(cita.MedicoId);
-        var horarios = _horarioMedicoService.ObtenerHorarioPorMedicoId(cita.MedicoId);
+        var paciente = await _context.Pacientes.FirstOrDefaultAsync(e=>e.Id==cita.PacienteId) ?? throw new KeyNotFoundException("Este paciente no existe");
+        var medico = await _context.Medicos.Include(m => m.Especialidad).FirstOrDefaultAsync(m => m.Id == cita.MedicoId) ?? throw new KeyNotFoundException("Este médico no existe");
+        var horarios = await _horarioMedicoService.ObtenerHorariosPorMedicoId(cita.MedicoId);
         
         var fechaFinal = cita.FechaInicio.AddMinutes(medico.DuracionCita);
         
-        bool conflicto = _context.Any(c => c.MedicoId == cita.MedicoId && c.Estado != CitaEstado.Cancelada 
+        bool conflicto = await _context.Citas.AnyAsync(c => c.MedicoId == cita.MedicoId && c.Estado != CitaEstado.Cancelada 
                                     && c.FechaInicio < fechaFinal && c.FechaFin > cita.FechaInicio);
         
         bool horarioValido = horarios.Any(h => h.DiaSemana == cita.FechaInicio.DayOfWeek &&
@@ -65,7 +61,6 @@ public class CitaService : ICitaService
         }
         var newCita = new Cita
         {
-            Id = _nextId++,
             PacienteId = cita.PacienteId,
             MedicoId = cita.MedicoId,
             Costo = cita.Costo,
@@ -73,50 +68,68 @@ public class CitaService : ICitaService
             FechaInicio = cita.FechaInicio,
             FechaFin = fechaFinal,
             Observaciones = cita.Observaciones,
-            Estado = CitaEstado.Confirmada
+            Estado = CitaEstado.Confirmada,
+            Paciente=paciente,
+            Medico=medico
         };
         _context.Add(newCita);
-        return MapearDto(newCita, paciente, medico);
+        await _context.SaveChangesAsync();
+        return MapearDto(newCita);
     }
 
-    public void EliminarCita(int id)
+    public async Task EliminarCita(int id)
     {
-        var cita = _context.FirstOrDefault(c => c.Id == id) ?? throw new KeyNotFoundException("Esta cita no existe");
-        _context.Remove(cita);
+        var cita = await _context.Citas.FirstOrDefaultAsync(c => c.Id == id) ?? throw new KeyNotFoundException("Esta cita no existe");
+        cita.Activo = false; // Soft delete
+        cita.FechaEliminacion = DateTime.Now; // Registrar fecha de eliminación
+        await _context.SaveChangesAsync();
     }
 
-    public List<CitaDto> ObtenerCitas()
+    public async Task<IEnumerable<CitaDto>> ObtenerCitas()
     {
-        return _context.Select(c =>
-        {
-            var paciente = _pacienteService.ObtenerPacienteAsync(c.PacienteId);
-            var medico = _medicoService.ObtenerMedico(c.MedicoId);
-            return MapearDto(c, paciente, medico);
-        }).ToList();
+        return await _context.Citas.Include(c => c.Paciente).Include(c => c.Medico).ThenInclude(m => m.Especialidad).Select(c =>
+       new CitaDto(
+            c.Id,
+            new PacienteResumenDto(
+                c.PacienteId,
+                $"{c.Paciente.Nombre} {c.Paciente.Apellido}", 
+                c.Paciente.Dni
+            ),
+            new MedicoResumenDto(
+                c.MedicoId,
+                $"{c.Medico.Nombre} {c.Medico.Apellido}",
+                c.Medico.Especialidad.Nombre
+            ),
+            c.FechaInicio,
+            c.FechaFin,
+            c.Motivo,
+            c.Estado.ToString(),
+            c.FechaCreacion,
+            c.FechaModificacion
+
+        )).ToListAsync();
     }
 
-    public async Task<CitaDto> ObtenerCitaAsync(int id)
+    public async Task<CitaDto> ObtenerCita(int id)
     {
-        var cita = _context.FirstOrDefault(c => c.Id == id) ?? throw new KeyNotFoundException("Esta cita no existe");
-        var paciente = await _pacienteService.ObtenerPacienteAsync(cita.PacienteId);
-        var medico = await _medicoService.ObtenerMedicoAsync(cita.MedicoId);
-
-        return MapearDto(cita, paciente, medico);
+        var cita = await _context.Citas.Include(c => c.Paciente).Include(c => c.Medico)
+        .ThenInclude(m => m.Especialidad).FirstOrDefaultAsync(c => c.Id == id) ?? throw new KeyNotFoundException("Esta cita no existe");
+        return MapearDto(cita);
     }
 
-    private CitaDto MapearDto(Cita cita, PacienteDto paciente, MedicoResponseDto medico)
+    private static CitaDto MapearDto(Cita cita)
     {
         return new CitaDto(
             cita.Id,
             new PacienteResumenDto(
                 cita.PacienteId,
-                paciente.NombreCompleto,
-                paciente.Dni
+                $"{cita.Paciente.Nombre} {cita.Paciente.Apellido}", 
+                cita.Paciente.Dni
             ),
             new MedicoResumenDto(
                 cita.MedicoId,
-                $"{medico.Nombre} {medico.Apellido}",
-                medico.EspecialidadNombre
+                $"{cita.Medico.Nombre} {cita.Medico.Apellido}",
+                cita.Medico.Especialidad.Nombre
             ),
             cita.FechaInicio,
             cita.FechaFin,
