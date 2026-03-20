@@ -60,7 +60,8 @@ public class PacienteService : IPacienteService
     public async Task EliminarPaciente(int id)
     {
         var paciente = await _context.Pacientes.FirstOrDefaultAsync(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente no existe");
-        _context.Pacientes.Remove(paciente);
+        paciente.Activo = false;
+        paciente.FechaEliminacion = DateTime.Now;
         await _context.SaveChangesAsync();
     }
 

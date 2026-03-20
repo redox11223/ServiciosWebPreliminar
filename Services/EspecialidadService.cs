@@ -42,13 +42,14 @@ public class EspecialidadService : IEspecialidadService
             };
         _context.Especialidades.Add(newEspecialidad);
         await _context.SaveChangesAsync();
-        return newEspecialidad;
+         return newEspecialidad;
     }
 
     public async Task EliminarEspecialidad(int id)
     {
         var especialidad = await _context.Especialidades.FirstOrDefaultAsync(e => e.Id == id) ?? throw new KeyNotFoundException("Esta especialidad no existe");
-        _context.Especialidades.Remove(especialidad);
+        especialidad.Activo = false;
+        especialidad.FechaEliminacion = DateTime.Now;
         await _context.SaveChangesAsync();
     }
 

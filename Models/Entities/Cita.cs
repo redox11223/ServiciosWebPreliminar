@@ -6,7 +6,6 @@ namespace preliminarServicios.Models.Entities;
 public class Cita:EntidadBase
 {
     public int PacienteId{get;set;}
-
     public required Paciente Paciente {get;set;} 
     public int MedicoId{get;set;}
     public required Medico Medico {get;set;} 
