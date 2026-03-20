@@ -17,11 +17,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPost]
-        public ActionResult<HorarioMedicoDto> AgregarHorario(CreateHorarioMedicoDto horario)
+        public async Task<ActionResult<HorarioMedicoDto>> AgregarHorario(CreateHorarioMedicoDto horario)
         {
             try
             {
-                var nuevoHorario = _horarioMedicoService.AgregarHorario(horario);
+                var nuevoHorario = await _horarioMedicoService.AgregarHorario(horario);
                 return CreatedAtAction(nameof(ObtenerHorarioPorId), new { id = nuevoHorario.Id }, nuevoHorario);
             }
             catch (KeyNotFoundException ex)
@@ -35,11 +35,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<HorarioMedicoDto> ActualizarHorario(int id, CreateHorarioMedicoDto horario)
+        public async Task<ActionResult<HorarioMedicoDto>> ActualizarHorario(int id, CreateHorarioMedicoDto horario)
         {
             try
             {
-                var horarioActualizado = _horarioMedicoService.ActualizarHorario(id, horario);
+                var horarioActualizado = await _horarioMedicoService.ActualizarHorario(id, horario);
                 return Ok(horarioActualizado);
             }
             catch (KeyNotFoundException ex)
@@ -53,11 +53,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult EliminarHorario(int id)
+        public async Task<IActionResult> EliminarHorario(int id)
         {
             try
             {
-                _horarioMedicoService.EliminarHorario(id);
+                await _horarioMedicoService.EliminarHorario(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -67,12 +67,12 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet("medico/{medicoId}")]
-        public ActionResult<List<HorarioMedicoDto>> ObtenerHorariosPorMedicoId(int medicoId)
+        public async Task<ActionResult<List<HorarioMedicoDto>>> ObtenerHorariosPorMedicoId(int medicoId)
         {
             try
             {
-                var horarios = _horarioMedicoService.ObtenerHorarioPorMedicoId(medicoId);
-                if (horarios.Count == 0)
+                var horarios = await _horarioMedicoService.ObtenerHorariosPorMedicoId(medicoId);
+                if (!horarios.Any())
                     return NotFound($"No se encontraron horarios para el médico.");
                 return Ok(horarios);
             }
@@ -83,11 +83,12 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<HorarioMedicoDto>> ListarHorarios()
+        public async Task<ActionResult<List<HorarioMedicoDto>>> ListarHorarios()
         {
             try
             {
-                return Ok(_horarioMedicoService.ListarHorarios());
+                var horarios = await _horarioMedicoService.ListarHorarios();
+                return Ok(horarios);
             }
             catch (KeyNotFoundException ex)
             {
@@ -96,11 +97,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<HorarioMedicoDto> ObtenerHorarioPorId(int id)
+        public async Task<ActionResult<HorarioMedicoDto>> ObtenerHorarioPorId(int id)
         {
             try
             {
-                var horario = _horarioMedicoService.ObtenerHorarioPorId(id);
+                var horario = await _horarioMedicoService.ObtenerHorarioPorId(id);
                 return Ok(horario);
             }
             catch (KeyNotFoundException ex)

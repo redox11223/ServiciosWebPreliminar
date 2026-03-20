@@ -1,84 +1,92 @@
 using System;
 using preliminarServicios.Models.Dtos;
 using preliminarServicios.Models.Entities;
+using Microsoft.EntityFrameworkCore;
+using preliminarServicios.Data;
 
 namespace preliminarServicios.Services;
 
 public class HorarioMedicoService : IHorarioMedicoService
 {
-    private readonly List<HorarioMedico> _horarios = [];
-    private int _nextId = 1;
+    private readonly ClinicaDbContext _context;
 
-    private readonly IMedicoService _medicoService;
-
-    public HorarioMedicoService(IMedicoService medicoService)
+    public HorarioMedicoService( ClinicaDbContext context)
     {
-        _medicoService = medicoService;
+        _context = context;
     }
-    public HorarioMedicoDto ActualizarHorario(int id, CreateHorarioMedicoDto horario)
+    public async Task<HorarioMedicoDto> ActualizarHorario(int id, CreateHorarioMedicoDto horario)
     {
-        var horarioExistente = _horarios.Find(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
-        var medico = _medicoService.ObtenerMedico(horario.MedicoId);
+        var horarioExistente = await _context.Horarios.FirstOrDefaultAsync(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
+        var medico = await _context.Medicos.Include(m => m.Especialidad).FirstOrDefaultAsync(m => m.Id == horario.MedicoId) 
+            ?? throw new KeyNotFoundException("El médico no existe");
         horarioExistente.MedicoId = horario.MedicoId;
         horarioExistente.DiaSemana = horario.DiaSemana;
         horarioExistente.HoraInicio = horario.HoraInicio;
         horarioExistente.HoraFin = horario.HoraFin;
         horarioExistente.FechaModificacion = DateTime.Now;
-
-        return MapToDto(horarioExistente, medico);
+        await _context.SaveChangesAsync();
+        return MapToDto(horarioExistente);
     }
 
-    public HorarioMedicoDto AgregarHorario(CreateHorarioMedicoDto horario)
+    public async Task<HorarioMedicoDto> AgregarHorario(CreateHorarioMedicoDto horario)
     {
-        var medico = _medicoService.ObtenerMedico(horario.MedicoId);
+        var medico = await _context.Medicos.Include(m => m.Especialidad).FirstOrDefaultAsync(m => m.Id == horario.MedicoId) 
+            ?? throw new KeyNotFoundException("El médico no existe");
         var newHorario = new HorarioMedico
         {
-            Id = _nextId++,
             MedicoId = horario.MedicoId,
-            DiaSemana = horario.DiaSemana,
+            DiaSemana = horario.DiaSemana, 
             HoraInicio = horario.HoraInicio,
-            HoraFin = horario.HoraFin
+            HoraFin = horario.HoraFin,
+            Medico = medico
         };
-        _horarios.Add(newHorario);
-        return MapToDto(newHorario, medico);
+        _context.Add(newHorario);
+        await _context.SaveChangesAsync();
+        return MapToDto(newHorario);
     }
 
-    public void EliminarHorario(int id)
+    public async Task EliminarHorario(int id)
     {
-        var horario = _horarios.Find(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
-        _horarios.Remove(horario);
+        var horario = await _context.Horarios.FirstOrDefaultAsync(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
+        _context.Remove(horario);
+        await _context.SaveChangesAsync();
     }
 
-    public List<HorarioMedicoDto> ListarHorarios()
+    public async Task<IEnumerable<HorarioMedicoDto>> ListarHorarios()
     {
-       return _horarios.Select(h => {
-            var medico = _medicoService.ObtenerMedico(h.MedicoId);
-            return MapToDto(h, medico);
-        }).ToList();
+        return await _context.Horarios.Include(h => h.Medico).ThenInclude(m => m.Especialidad).Select(h =>  new HorarioMedicoDto(
+            h.Id,
+            new MedicoResumenDto(h.Medico.Id, $"{h.Medico.Nombre} {h.Medico.Apellido}", h.Medico.Especialidad.Nombre),
+            h.DiaSemana,
+            h.HoraInicio,
+            h.HoraFin
+        )
+        ).ToListAsync();
     }
 
-    public List<HorarioMedicoDto> ObtenerHorarioPorMedicoId(int id)
+    public async Task<IEnumerable<HorarioMedicoDto>> ObtenerHorariosPorMedicoId(int id)
     {
-        var horario = _horarios.FindAll(h => h.MedicoId == id);
-        
-        return horario.Select(h => {
-            var medico = _medicoService.ObtenerMedico(h.MedicoId);
-            return MapToDto(h, medico);
-        }).ToList();
+        return await _context.Horarios.Include(h => h.Medico).ThenInclude(m => m.Especialidad).Where(h => h.MedicoId == id).Select(h =>  new HorarioMedicoDto(
+            h.Id,
+            new MedicoResumenDto(h.Medico.Id, $"{h.Medico.Nombre} {h.Medico.Apellido}", h.Medico.Especialidad.Nombre),
+            h.DiaSemana,
+            h.HoraInicio,
+            h.HoraFin
+        )
+        ).ToListAsync();
     }
 
-    public HorarioMedicoDto ObtenerHorarioPorId(int id)
+    public async Task<HorarioMedicoDto> ObtenerHorarioPorId(int id)
     {
-        var horario = _horarios.Find(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
-        var medico = _medicoService.ObtenerMedico(horario.MedicoId);
-        return MapToDto(horario, medico);
+        var horario = await _context.Horarios.Include(h => h.Medico).ThenInclude(m => m.Especialidad).FirstOrDefaultAsync(h => h.Id == id) ?? throw new KeyNotFoundException($"No se encontró un horario con ID {id}");
+        return MapToDto(horario);
     }
     
-    private HorarioMedicoDto MapToDto(HorarioMedico horario,MedicoResponseDto medico)
+    private HorarioMedicoDto MapToDto(HorarioMedico horario)
     {
         return new HorarioMedicoDto(
             horario.Id,
-            new MedicoResumenDto(medico.Id, $"{medico.Nombre} {medico.Apellido}", medico.EspecialidadNombre),
+            new MedicoResumenDto(horario.Medico.Id, $"{horario.Medico.Nombre} {horario.Medico.Apellido}", horario.Medico.Especialidad.Nombre),
             horario.DiaSemana,
             horario.HoraInicio,
             horario.HoraFin

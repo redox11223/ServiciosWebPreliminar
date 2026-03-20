@@ -18,11 +18,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Especialidad> AgregarEspecialidad(CreateEspecialidadDto especialidad)
+        public async Task<ActionResult<Especialidad>> AgregarEspecialidad(CreateEspecialidadDto especialidad)
         {
             try
             {
-                var newEspecialidad = _especialidadService.AgregarEspecialidad(especialidad);
+                var newEspecialidad = await _especialidadService.AgregarEspecialidad(especialidad);
                 return CreatedAtAction(nameof(ObtenerEspecialidad), new { id = newEspecialidad.Id }, newEspecialidad);
             }
             catch (InvalidOperationException ex)
@@ -32,17 +32,17 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Especialidad>> ObtenerEspecialidades()
+        public async Task<ActionResult<List<Especialidad>>> ObtenerEspecialidades()
         {
-            return Ok(_especialidadService.ObtenerEspecialidades());
+            return Ok(await _especialidadService.ObtenerEspecialidades());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Especialidad> ObtenerEspecialidad(int id)
+        public async Task<ActionResult<Especialidad>> ObtenerEspecialidad(int id)
         {
             try
             {
-                return Ok(_especialidadService.ObtenerEspecialidad(id));
+                return Ok(await _especialidadService.ObtenerEspecialidad(id));
             }
             catch (KeyNotFoundException ex)
             {
@@ -51,11 +51,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult EliminarEspecialidad(int id)
+        public async Task<IActionResult> EliminarEspecialidad(int id)
         {
             try
             {
-                _especialidadService.EliminarEspecialidad(id);
+                await _especialidadService.EliminarEspecialidad(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -65,11 +65,11 @@ namespace preliminarServicios.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Especialidad> ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad)
+        public async Task<ActionResult<Especialidad>> ActualizarEspecialidad(int id, CreateEspecialidadDto especialidad)
         {
             try
             {
-                var updatedEspecialidad = _especialidadService.ActualizarEspecialidad(id, especialidad);
+                var updatedEspecialidad = await _especialidadService.ActualizarEspecialidad(id, especialidad);
                 return Ok(updatedEspecialidad);
             }
             catch (KeyNotFoundException ex)

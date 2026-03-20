@@ -1,44 +1,50 @@
 using System;
+using preliminarServicios.Data;
 using preliminarServicios.Models.Dtos;
 using preliminarServicios.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace preliminarServicios.Services;
 
 public class PacienteService : IPacienteService
 {
-    private readonly List<Paciente> _pacientes = [];
-    private int _nextId = 1;
-    public PacienteDto ActualizarPaciente(int id, CreatePacienteDto paciente)
+    private readonly ClinicaDbContext _context;
+    public PacienteService(ClinicaDbContext context)
     {
-        var existingPaciente = _pacientes.FirstOrDefault(p => p.Id == id) ?? throw new KeyNotFoundException("Este paciente no existe");
-        if (_pacientes.Any(p => p.Dni.Equals(paciente.Dni,StringComparison.OrdinalIgnoreCase) && p.Id != id))
+        _context = context;
+    }
+
+    public async Task<PacienteDto> ActualizarPaciente(int id, CreatePacienteDto paciente)
+    {
+        var existingPaciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == id) ?? throw new KeyNotFoundException("Este paciente no existe");
+        if (await _context.Pacientes.AnyAsync(p => p.Dni.ToLower() == paciente.Dni.ToLower().Trim() && p.Id != id))
         {
             throw new InvalidOperationException("Este paciente ya existe");
         }
         existingPaciente.Nombre = paciente.Nombre;
         existingPaciente.Apellido = paciente.Apellido;
-        existingPaciente.Dni = paciente.Dni;
-        existingPaciente.Email = paciente.Email;
-        existingPaciente.Telefono = paciente.Telefono;
+        existingPaciente.Dni = paciente.Dni.Trim();
+        existingPaciente.Email = paciente.Email.Trim();
+        existingPaciente.Telefono = paciente.Telefono?.Trim();
         existingPaciente.FechaNacimiento = paciente.FechaNacimiento;
         existingPaciente.FechaModificacion = DateTime.Now;
+        await _context.SaveChangesAsync();
         return MapearAPacienteDto(existingPaciente);
              
     }
 
-    public PacienteDto AgregarPaciente(CreatePacienteDto paciente)
+    public async Task<PacienteDto> AgregarPaciente(CreatePacienteDto paciente)
     {
-        if( _pacientes.Any(p => p.Dni.Equals(paciente.Dni,StringComparison.OrdinalIgnoreCase)))
+        if( await _context.Pacientes.AnyAsync(p => p.Dni.ToLower() == paciente.Dni.ToLower().Trim()))
         {
             throw new InvalidOperationException("Este paciente ya existe");
         }
-        if( _pacientes.Any(p => p.Email.Equals(paciente.Email,StringComparison.OrdinalIgnoreCase)))
+        if( await _context.Pacientes.AnyAsync(p => p.Email.ToLower() == paciente.Email.ToLower().Trim()))
         {
             throw new InvalidOperationException("Este Email ya existe");
         }
         var newPaciente = new Paciente
         {
-            Id = _nextId++,
             Nombre = paciente.Nombre.Trim(),
             Apellido = paciente.Apellido.Trim(),
             Dni = paciente.Dni.Trim(),
@@ -46,28 +52,45 @@ public class PacienteService : IPacienteService
             Telefono = paciente.Telefono?.Trim(),
             FechaNacimiento = paciente.FechaNacimiento
         };
-        _pacientes.Add(newPaciente);
+        _context.Pacientes.Add(newPaciente);
+        await _context.SaveChangesAsync();
         return MapearAPacienteDto(newPaciente);
     }
 
-    public void EliminarPaciente(int id)
+    public async Task EliminarPaciente(int id)
     {
-        var paciente = _pacientes.FirstOrDefault(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente ya existe");
-        _pacientes.Remove(paciente);
+        var paciente = await _context.Pacientes.FirstOrDefaultAsync(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente no existe");
+        _context.Pacientes.Remove(paciente);
+        await _context.SaveChangesAsync();
     }
 
-    public PacienteDto ObtenerPaciente(int id)
+    public async Task<PacienteDto> ObtenerPaciente(int id)
     {
-        var paciente = _pacientes.FirstOrDefault(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente no existe");
+        var paciente = await _context.Pacientes.FirstOrDefaultAsync(e=>e.Id==id) ?? throw new KeyNotFoundException("Este paciente no existe");
         return MapearAPacienteDto(paciente);
     }
 
-    public List<PacienteDto> ObtenerPacientes()
+    public async Task<IEnumerable<PacienteDto>> ObtenerPacientes()
     {
-        return _pacientes.Select(MapearAPacienteDto).ToList();
+        // POR QUÉ SE HACE ASÍ (PROYECCIÓN DIRECTA):
+        // 1. EFICIENCIA (SQL): Al usar .Select() antes de materializar la lista, Entity Framework 
+        //    genera un SQL que solo pide las columnas necesarias, evitando traer datos pesados (como fotos o auditoría).
+        // 2. TRADUCCIÓN A SQL: No usamos métodos privados (como MapearAPacienteDto) dentro del Select 
+        //    porque _context.Pacientes es IQueryable. El proveedor de SQL no sabe traducir métodos 
+        //    propios de C# a comandos SQL y lanzaría una excepción en tiempo de ejecución.
+        // 3. MATERIALIZACIÓN: .ToListAsync() ejecuta la consulta en la base de datos y trae los 
+        //    resultados a la memoria del servidor de forma asíncrona, evitando bloquear el hilo principal.
+        return await _context.Pacientes.Select(p => new PacienteDto(
+            p.Id,
+            $"{p.Nombre} {p.Apellido}",
+            p.Dni,
+            p.Email,
+            p.Telefono,
+            p.FechaNacimiento
+        )).ToListAsync();
     }
 
-    private PacienteDto MapearAPacienteDto(Paciente paciente)
+    private static PacienteDto MapearAPacienteDto(Paciente paciente)
     {
         return new PacienteDto(
             paciente.Id,

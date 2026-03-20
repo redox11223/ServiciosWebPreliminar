@@ -6,9 +6,9 @@ namespace preliminarServicios.Services;
 
 public interface IMedicoService
 {
-    MedicoResponseDto AgregarMedico(CreateMedicoDto medico);
-    List<MedicoResponseDto> ObtenerMedicos();
-    MedicoResponseDto ObtenerMedico(int id);
-    void EliminarMedico(int id);
-    MedicoResponseDto ActualizarMedico(int id, CreateMedicoDto medico);
+    Task<MedicoResponseDto> AgregarMedico(CreateMedicoDto medico);
+    Task<IEnumerable<MedicoResponseDto>> ObtenerMedicos();
+    Task<MedicoResponseDto> ObtenerMedico(int id);
+    Task EliminarMedico(int id);
+    Task<MedicoResponseDto> ActualizarMedico(int id, CreateMedicoDto medico);
 }
